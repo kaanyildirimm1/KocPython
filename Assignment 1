@@ -1,0 +1,96 @@
+from random import uniform
+
+class Stock():
+    def __init__(self, price, symbol):
+        self.price = price
+        self.symbol = symbol
+        self.shares = 1
+
+class MutualFund():
+    def __init__(self, symbol):
+        self.symbol = symbol
+        self.shares = 1
+        self.price = 1
+
+class Portfolio():
+    def __init__(self):
+        self.total_cash = 0
+        self.stocks_bought = []
+        self.mutual_funds_bought = []
+        self.log = []
+    
+    def addCash(self, cash):
+        self.total_cash += cash
+        self.log.append(str(cash) + "$ added.")
+    
+    def buyStock(self, amount_of_shares, stock):
+        self.total_cash -= amount_of_shares * stock.price
+        stock.shares = amount_of_shares
+        self.stocks_bought.append(stock)
+        self.log.append(str(amount_of_shares) + " " + stock.symbol + " stock bought, for " + str(amount_of_shares * stock.price) + "$")
+    
+    def buyMutualFund(self, amount_of_shares, mutual_fund):
+        self.total_cash -= amount_of_shares * mutual_fund.price
+        mutual_fund.shares = amount_of_shares
+        self.mutual_funds_bought.append(mutual_fund)
+        self.log.append(str(amount_of_shares) + " " + mutual_fund.symbol + " mutual fund bought, for "+ str(amount_of_shares * mutual_fund.price)+ "$")
+    
+    def __str__(self):
+        result = "cash: $"
+        result += str(self.total_cash)
+            
+        if len(self.stocks_bought) > 0:  
+            result += "\nstock: "
+            for stock in self.stocks_bought:
+                result += str(stock.shares) + " " + stock.symbol + "\n"
+        if len(self.mutual_funds_bought) > 0:
+            result += "\nmutual funds: "
+            for mutual_fund in self.mutual_funds_bought:
+                result += str(mutual_fund.shares) + " " + mutual_fund.symbol + "\n"
+        self.log.append("Printed portfolio.")
+        return result
+    
+    def sellStock(self, symbol, amount_of_shares):
+        for stock in self.stocks_bought:
+            if stock.symbol == symbol:
+                stock.shares -= amount_of_shares
+                break
+        original_price = stock.price
+        sales_price=amount_of_shares * uniform(0.5*original_price, 1.5*original_price)
+        self.total_cash += sales_price
+        self.log.append(str(amount_of_shares) + " " + stock.symbol + " stock sold, for " +str(sales_price)+"$")
+    
+    def sellMutualFund(self, symbol, amount_of_shares):
+        for mutual_fund in self.mutual_funds_bought:
+            if mutual_fund.symbol == symbol:
+                mutual_fund.shares -= amount_of_shares
+                break
+        sales_price=amount_of_shares * uniform(0.9, 1.2)
+        self.total_cash += sales_price
+        self.log.append(str(amount_of_shares) + " " + mutual_fund.symbol + " mutual fund sold, for " + str(sales_price)+ "$")
+
+    
+    def withdrawCash(self, cash):
+        self.total_cash -= cash
+        self.log.append(str(cash) + "$ withdrawn.")
+    
+    
+    def history(self):
+        for hist in self.log:
+            print(hist)
+        
+portfolio = Portfolio()
+portfolio.addCash(300.5)
+s = Stock(20, "HFH")
+portfolio.buyStock(5, s)
+mf1 = MutualFund("BRT")
+mf2 = MutualFund("GHT")
+portfolio.buyMutualFund(10.3, mf1)
+portfolio.buyMutualFund(2, mf2)
+print(portfolio)
+
+portfolio.sellMutualFund("BRT", 3)
+portfolio.sellStock("HFH", 1)
+portfolio.withdrawCash(50)
+portfolio.history()
+
